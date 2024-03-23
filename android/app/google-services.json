@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "555650182020",
+    "project_id": "zorko-158ad",
+    "storage_bucket": "zorko-158ad.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:555650182020:android:78adbb07aa2c6f00ab4bd1",
+        "android_client_info": {
+          "package_name": "com.example.hack"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB1_RZo1UjbunegxsA8hpB89m9AV6kiHKM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
