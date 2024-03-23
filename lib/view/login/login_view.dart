@@ -7,6 +7,7 @@ import 'package:hack/common/globs.dart';
 import 'package:hack/common_widget/round_button.dart';
 import 'package:hack/view/auth_provider.dart';
 import 'package:hack/view/home/home_view.dart';
+import 'package:hack/view/login/log_in_with_number.dart';
 import 'package:hack/view/login/rest_password_view.dart';
 import 'package:hack/view/login/sing_up_view.dart';
 import 'package:hack/view/on_boarding/on_boarding_view.dart';
@@ -177,9 +178,16 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     RoundIconButton(
                       icon: "assets/img/facebook_logo.png",
-                      title: "Login with Facebook",
+                      title: "Login with Phone",
                       color: const Color(0xff367FC0),
-                      onPressed: () {},
+                     onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginWithPhoneNumber(),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(
                       height: 25,

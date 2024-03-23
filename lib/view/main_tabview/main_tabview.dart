@@ -97,7 +97,7 @@ class _MainTabViewState extends State<MainTabView> {
                   onTap: () {
                     if (selctTab != 3) {
                       selctTab = 3;
-                      selectPageView = const ProfileView();
+                      selectPageView =  ProfileView();
                     }
                     if (mounted) {
                       setState(() {});

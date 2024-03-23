@@ -30,9 +30,9 @@ class _WelcomeViewState extends State<WelcomeView> {
                   width: media.width,
                 ),
                 Image.asset(
-                  "assets/img/app_logo.png",
-                  width: media.width * 0.55,
-                  height: media.width * 0.55,
+                  "assets/img/zorko.png",
+                  width: media.width * 0.48,
+                  height: media.width * 0.48,
                   fit: BoxFit.contain,
                 ),
               ],

@@ -59,6 +59,9 @@ dependencies:
   equatable: ^2.0.5
   share_plus: ^7.2.2
   firebase_dynamic_links: ^5.4.17
+  firebase_storage: ^11.6.9
+  awesome_notifications: ^0.8.2
+  image_cropper: ^5.0.1
 
 dev_dependencies:
   flutter_test:

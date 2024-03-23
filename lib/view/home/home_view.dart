@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hack/common/color_extension.dart';
 import 'package:hack/common_widget/round_textfield.dart';
@@ -7,9 +8,7 @@ import 'package:hack/googlemap.dart';
 
 import '../../common/globs.dart';
 import '../../common/service_call.dart';
-import '../../common_widget/category_cell.dart';
 import '../../common_widget/most_popular_cell.dart';
-import '../../common_widget/popular_resutaurant_row.dart';
 import '../../common_widget/recent_item_row.dart';
 import '../../common_widget/view_all_title_row.dart';
 import '../more/my_order_view.dart';
@@ -39,7 +38,7 @@ class _HomeViewState extends State<HomeView> {
       "rating": "124",
       "type": "Cafa",
       "food_type": "Western Food",
-      "price":"100/-"
+      "price": "100/-"
     },
     {
       "image": "assets/img/res_2.png",
@@ -48,7 +47,7 @@ class _HomeViewState extends State<HomeView> {
       "rating": "124",
       "type": "Cafa",
       "food_type": "Western Food",
-      "price":"150/-"
+      "price": "150/-"
     },
     {
       "image": "assets/img/res_3.png",
@@ -57,7 +56,7 @@ class _HomeViewState extends State<HomeView> {
       "rating": "124",
       "type": "Cafa",
       "food_type": "Western Food",
-      "price":"250/-"
+      "price": "250/-"
     },
   ];
 
@@ -106,13 +105,168 @@ class _HomeViewState extends State<HomeView> {
       "food_type": "Western Food"
     },
   ];
-  List price=[
+  List price = ["100 /-", " 145 /-", " 150/-"];
+  double? filterPrice;
 
-    "100 /-",
-    " 145 /-",
-    " 150/-"
+  void applyFilter(double price) {
+    setState(() {
+      filterPrice = price;
+    });
+  }
 
-  ];
+  void clearFilter() {
+    setState(() {
+      filterPrice = null;
+    });
+  }
+
+  Widget _buildExistingFoodListView() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('food_items').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(child: Text('No food items found.'));
+        }
+        final foodItems = snapshot.data!.docs.where((foodItem) {
+          if (filterPrice != null) {
+            final price = foodItem['price'] as double;
+            return price <= filterPrice!;
+          }
+          return true;
+        }).toList();
+        // Sort food items by price in descending order
+        foodItems.sort((a, b) {
+          final priceA = a['price'] as double;
+          final priceB = b['price'] as double;
+          return priceB.compareTo(priceA);
+        });
+        return ListView.builder(
+          physics:
+              const NeverScrollableScrollPhysics(), // Prevent nested scrolling
+          shrinkWrap: true, // Adjust to the height of its contents
+          itemCount: foodItems.length,
+          itemBuilder: (context, index) {
+            final foodItem = foodItems[index];
+            final foodName = foodItem['foodName'] as String;
+            final description = foodItem['description'] as String;
+            final imageUrl = foodItem['imageUrl'] as String;
+            final price =
+                foodItem['price'] as double; // Assuming 'price' is a double
+
+            return ListTile(
+              contentPadding: EdgeInsets.zero, // Remove default padding
+              title: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 20),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                                20), // Adjust the radius as needed
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 5,
+                                offset:
+                                    Offset(0, 3), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                                20), // Same as the container's border radius
+                            child: Image.network(
+                              imageUrl,
+                              height: 150,
+                              width: 350,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 8), // Add some space between image and text
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20, right: 20, top: 15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(foodName, // Display price
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      color: Colors.black,
+                                    )),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Container(
+                                  width: 200,
+                                  height: 18,
+                                  child:RichText(
+  text: TextSpan(
+    style: TextStyle(
+      fontWeight: FontWeight.bold,
+      color: Colors.black,
+    ),
+    children: [
+    
+      TextSpan(
+        text: description,
+        style: TextStyle(
+          fontSize: 14,
+          color: Colors.grey.shade600,
+        ),
+      ),
+      // TextSpan(
+      //   text: '..', // Second occurrence of description
+      //   style: TextStyle(
+      //     fontSize: 14,
+      //     color: Colors.grey.shade600,
+      //   ),
+      // ),
+    ],
+  ),
+),
+
+                                ),
+
+                              ],
+                            ),
+                           
+                          ],
+                        ),
+                        Text(
+                          '\$${price.toStringAsFixed(2)}', // Display price
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                              color: Colors.orange.shade900),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -246,24 +400,74 @@ class _HomeViewState extends State<HomeView> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ViewAllTitleRow(
-                  title: "Your Budget Frindly Food",
-                  onView: () {},
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Your Budget Food",
+                      style: TextStyle(
+                          color: TColor.primaryText,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.filter_alt,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            // Show filter dialog to enter price
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: Text('Filter by Price'),
+                                  content: TextField(
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                        labelText: 'Enter Price'),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        filterPrice = double.tryParse(value);
+                                      });
+                                    },
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        // Apply filter
+                                        applyFilter(filterPrice ?? 0);
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text('Apply'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close),
+                          onPressed: () {
+                            // Clear filter
+                            clearFilter();
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemCount: popArr.length,
-                itemBuilder: ((context, index) {
-                  var pObj = popArr[index] as Map? ?? {};
-                  return PopularRestaurantRow(
-                    pObj: pObj,
-                    onTap: () {},
-                  );
-                }),
-              ),
+              _buildExistingFoodListView(),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ViewAllTitleRow(
@@ -350,11 +554,11 @@ class MySlider extends StatelessWidget {
                   borderRadius: BorderRadius.circular(28),
                   child: Image.asset(
                     "assets/img/cel.webp",
-                    fit: BoxFit.cover, // Ensures the image covers the entire container
+                    fit: BoxFit
+                        .cover, // Ensures the image covers the entire container
                   ),
                 ),
               ),
-
             ),
             Positioned(
               // bottom: 40,
@@ -451,14 +655,14 @@ class MySlider extends StatelessWidget {
                   borderRadius: BorderRadius.circular(28),
                   child: Image.asset(
                     "assets/img/holi1.jpg",
-                    fit: BoxFit.cover, // Ensures the image covers the entire container
+                    fit: BoxFit
+                        .cover, // Ensures the image covers the entire container
                   ),
                 ),
               ),
-
             ),
             Positioned(
- // bottom: 40,
+              // bottom: 40,
               right: 0,
               top: 0,
               child: Image.asset(

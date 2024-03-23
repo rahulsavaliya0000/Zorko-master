@@ -1,9 +1,20 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hack/review.dart';
 import 'package:hack/view/RefCodePage.dart';
+import 'package:hack/view/app_color.dart';
 import 'package:hack/view/login/sing_up_view.dart';
+import 'package:hack/view/login/welcome_view.dart';
 import 'package:hack/view/more/about_us_view.dart';
+import 'package:hack/view/more/admin_panel.dart';
 import 'package:hack/view/more/inbox_view.dart';
+import 'package:hack/view/more/noti.dart';
 import 'package:hack/view/more/payment_details_view.dart';
+import 'package:material_dialogs/dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
+import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 
 import '../../common/color_extension.dart';
 import '../../common/service_call.dart';
@@ -39,20 +50,20 @@ class _MoreViewState extends State<MoreView> {
     },
     {
       "index": "4",
-      "name": "Inbox",
-      "image": "assets/img/more_inbox.png",
-      "base": 0
-    },
-    {
-      "index": "5",
       "name": "About Us",
       "image": "assets/img/more_info.png",
       "base": 0
     },
     {
-      "index": "6",
+      "index": "5",
       "name": "Refer and earn",
       "image": "assets/img/earn.png",
+      "base": 0
+    },
+    {
+      "index": "6",
+      "name": "Admin",
+      "image": "assets/img/more_inbox.png",
       "base": 0
     },
     {
@@ -62,6 +73,80 @@ class _MoreViewState extends State<MoreView> {
       "base": 0
     },
   ];
+
+
+  Future<void> _signOut(BuildContext context) async {
+    try {
+      // Create a Completer to handle the result of the dialog
+      Completer<bool> completer = Completer<bool>();
+
+      // Show a confirmation dialog
+      Dialogs.bottomMaterialDialog(
+        msg: 'Are you sure you want to log out? You can\'t undo this action.',
+        msgStyle: TextStyle(
+            color: AppColor.blueColor,
+            fontFamily: 'Quicksand',
+            fontWeight: FontWeight.w700,
+            fontSize: 15),
+        title: 'Logout',
+        titleStyle: TextStyle(
+                              color:AppColor.redColor,
+                              fontFamily: 'Quicksand',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 19),
+        context: context,
+        actions: [
+          IconsOutlineButton(
+            onPressed: () {
+              completer.complete(
+                  false); // Complete with 'false' when Cancel is pressed
+              Navigator.of(context).pop();
+            },
+            text: 'Cancel',
+            iconData: Icons.cancel_outlined,
+            textStyle: TextStyle(color: Colors.grey),
+            iconColor: Colors.grey,
+          ),
+          IconsButton(
+            onPressed: () async {
+              completer.complete(
+                  true); // Complete with 'true' when Logout is pressed
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => WelcomeView()),
+                (route) => false,
+              );
+            },
+            text: 'Logout',
+            iconData: Icons.exit_to_app,
+            color: Colors.blue,
+            textStyle: TextStyle(color: Colors.white),
+            iconColor: Colors.white,
+          ),
+        ],
+      );
+
+      // Wait for the user's decision
+      bool result = await completer.future;
+
+      // If the user confirms the logout, result will be true
+      if (result == true) {
+        // Perform the logout
+        await FirebaseAuth.instance.signOut();
+
+        // Navigate to the CreateAccountPage and remove all previous routes
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const WelcomeView()),
+          (route) => false,
+        );
+      }
+    } catch (error) {
+      print('Error signing out: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,29 +218,25 @@ class _MoreViewState extends State<MoreView> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const NotificationsView()));
+                                        NotificationsPage()));
                           case "4":
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const InboxView()));
+                                    builder: (context) => const Review()));
                           case "5":
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const AboutUsView()));
+                                    builder: (context) => RefCodePage()));
                           case "6":
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>  RefCodePage()));
+                                    builder: (context) => DashboardScreen()));
                           case "7":
-                            ServiceCall.logout();
-                          // Navigator.push(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //         builder: (context) => const SignUpView()));
-                          default:
+                            _signOut(context);
+                            break;
                         }
                       },
                       child: Container(

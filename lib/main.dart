@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -26,6 +27,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,);
   prefs = await SharedPreferences.getInstance();
+    await AwesomeNotifications().initialize(null, [
+    NotificationChannel(
+        channelKey: "basic_channel",
+        channelName: "Basic Notifications",
+        channelDescription: "Test Notifications",
+        channelGroupKey: 'Basic_channel_group')
+  ], channelGroups: [
+    NotificationChannelGroup(
+        channelGroupKey: "Basic_channel_group", channelGroupName: "Basic Group")
+  ]);
+
 
   if(Globs.udValueBool(Globs.userLogin)) {
     ServiceCall.userPayload = Globs.udValue(Globs.userPayload);
