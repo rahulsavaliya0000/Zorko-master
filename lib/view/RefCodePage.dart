@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:hack/view/home/home_view.dart';
 import 'package:hack/view/main_tabview/main_tabview.dart';
 import 'package:hack/view/ref_provider.dart';
+import 'package:hack/view/step_three.dart';
 import 'package:hack/view/utils.dart';
-
 
 import 'package:provider/provider.dart';
 
@@ -30,7 +30,7 @@ class _RefCodePageState extends State<RefCodePage> {
               child: Container(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(color: Colors.blue),
+                decoration: BoxDecoration(color: Colors.orange.shade700),
                 child: Column(
                   children: [
                     const SizedBox(
@@ -59,19 +59,21 @@ class _RefCodePageState extends State<RefCodePage> {
                             children: [
                               Column(
                                 children: [
-                               TextFormField(
-  controller: _refController, // Make sure to use controller instead of the first parameter
-  decoration: InputDecoration(
-    hintText: 'Referral code',
-    border: OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.blue),
-    ),
-  ),
-),
-                                   SizedBox(
+                                  TextFormField(
+                                    controller:
+                                        _refController, // Make sure to use controller instead of the first parameter
+                                    decoration: InputDecoration(
+                                      hintText: 'Referral code',
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.orange.shade600),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
                                     height: 20,
                                   ),
-                                   SizedBox(
+                                  SizedBox(
                                     height: 20,
                                   ),
                                 ],
@@ -90,8 +92,7 @@ class _RefCodePageState extends State<RefCodePage> {
                                       Navigator.pushAndRemoveUntil(
                                           context,
                                           CupertinoPageRoute(
-                                              builder: (context) =>
-                                                  HomeView()),
+                                              builder: (context) => HomeView()),
                                           (route) => false);
                                     } else {
                                       showMessage(context, model.message);
@@ -102,7 +103,7 @@ class _RefCodePageState extends State<RefCodePage> {
                                   padding: const EdgeInsets.all(15.0),
                                   width: MediaQuery.of(context).size.width,
                                   decoration: BoxDecoration(
-                                    color: Colors.blue,
+                                    color: Colors.orange.shade700,
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Text(
@@ -119,7 +120,7 @@ class _RefCodePageState extends State<RefCodePage> {
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       CupertinoPageRoute(
-                                          builder: (context) => MainTabView()),
+                                          builder: (context) => BirthdayPickerContent()),
                                       (route) => false);
                                 },
                                 child: Text(

@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hack/common_widget/round_button.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+
+import '../../common/color_extension.dart';
 
 class AddFoodItemScreen extends StatefulWidget {
   @override
@@ -23,7 +26,18 @@ class _AddFoodItemScreenState extends State<AddFoodItemScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Food Item'),
+        title:AppBar(
+          title: Padding(
+            padding: const EdgeInsets.only(left: 15),
+            child: Text(
+              "Add Food Item",
+              style: TextStyle(
+                  color: Colors.black, fontSize: 25, fontWeight: FontWeight.w800),
+            ),
+          ),
+          automaticallyImplyLeading: false,
+        ),
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -35,7 +49,13 @@ class _AddFoodItemScreenState extends State<AddFoodItemScreen> {
               children: [
                 TextFormField(
                   controller: _foodNameController,
-                  decoration: InputDecoration(labelText: 'Food Name'),
+                  decoration: InputDecoration(
+                    labelText: 'Food Name',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                          40.0), // Adjust the radius as needed
+                    ),
+                  ),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter the food name';
@@ -46,7 +66,13 @@ class _AddFoodItemScreenState extends State<AddFoodItemScreen> {
                 SizedBox(height: 16.0),
                 TextFormField(
                   controller: _descriptionController,
-                  decoration: InputDecoration(labelText: 'Description'),
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                          40.0), // Adjust the radius as needed
+                    ),
+                  ),
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter a description';
@@ -57,33 +83,90 @@ class _AddFoodItemScreenState extends State<AddFoodItemScreen> {
                 SizedBox(height: 16.0),
                 TextFormField(
                   controller: _priceController,
-                  decoration: InputDecoration(labelText: 'Price'),
+                  decoration: InputDecoration(
+                    labelText: 'Price',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                          40.0), // Adjust the radius as needed
+                    ),
+                  ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Please enter the price';
+                      return 'Please enter the Price';
                     }
                     return null;
                   },
                 ),
                 SizedBox(height: 16.0),
-                _image == null
-                    ? ElevatedButton(
-                        onPressed: () {
-                          getImage();
-                        },
-                        child: Text('Select Image'),
-                      )
-                    : Image.file(_image!),
-                SizedBox(height: 32.0),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      uploadFoodItem();
-                    }
-                  },
-                  child: Text('Add Food Item'),
+                Container(
+                  height: 200,
+                  width: double.infinity,
+                  child: _image == null
+                      ? GestureDetector(
+                          onTap: () {
+                            getImage();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.orange.shade800,
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add_photo_alternate, size: 50),
+                                  SizedBox(height: 8),
+                                  Text('Add Photo'),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            getImage(); // You can replace this with your update photo logic
+                          },
+                          child: Container(
+                            width: 100, // Adjust width as needed
+                            height: 100, // Adjust height as needed
+                            decoration: BoxDecoration(
+                              shape: BoxShape
+                                  .circle, // This makes the container circular
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.5),
+                                  spreadRadius: 2,
+                                  blurRadius: 3,
+                                  offset: Offset(
+                                      0, 2), // changes position of shadow
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                  50), // half of the width/height to make it circular
+                              child: Image.file(
+                                _image!,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
                 ),
+                SizedBox(height: 32.0),
+
+                Center(
+
+                  child: RoundButton(
+                      title: "ADD FOOD ITEM",
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          uploadFoodItem();
+                        }
+                      }),
+                )
               ],
             ),
           ),
@@ -161,41 +244,78 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Zorko Dashboard'), // Customize the title here
+        title: Padding(
+          padding: const EdgeInsets.only(left: 15),
+          child: Text(
+            "Zorko Dashboard",
+            style: TextStyle(
+                color: Colors.black, fontSize: 25, fontWeight: FontWeight.w800),
+          ),
+        ),
+        automaticallyImplyLeading: false,
       ),
-      body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: [
-          ListTile(
-            title: Text('Existing Food'),
-            onTap: () {
-              // Navigate to the screen for adding new food items
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ExistingFoodScreen()),
-              );
-            },
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(
+                'assets/img/splash_bg.png'), // Replace 'assets/background_image.jpg' with the path to your image asset
+            fit: BoxFit.cover,
           ),
-          ListTile(
-            title: Text('Add Food'),
-            onTap: () {
-              // Navigate to the screen for adding new food items
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddFoodItemScreen()),
-              );
-            },
-          ),
-          // Add more ListTiles for additional functionalities as needed
-        ],
+        ),
+        child: ListView(
+          padding: EdgeInsets.all(16.0),
+          children: [
+            Card(
+              child: ListTile(
+                title: Text(
+                  "Existing Food",
+                  style: TextStyle(
+                      color: Colors.orange.shade700,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ExistingFoodScreen()),
+                  );
+                },
+              ),
+            ),
+            Card(
+              child: ListTile(
+                title: Text(
+                  "Add Food",
+                  style: TextStyle(
+                      color: Colors.orange.shade700,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w800),
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AddFoodItemScreen()),
+                  );
+                },
+              ),
+            ),
+            SizedBox(
+              height: 100,
+            ),
+            Center(
+                child: Image.asset(
+              "assets/img/zorko.png",
+              height: 80,
+            ))
+            // Add more Cards for additional functionalities as needed
+          ],
+        ),
       ),
     );
   }
 }
-
-// Example: ExistingFoodScreen.dart
-// Example: ExistingFoodScreen.dart
-
 
 class ExistingFoodScreen extends StatefulWidget {
   @override
@@ -224,14 +344,14 @@ class _ExistingFoodScreenState extends State<ExistingFoodScreen> {
         title: Text('Existing Food'),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_alt),
+            icon: Icon(Icons.filter_alt, color: Colors.orange.shade700),
             onPressed: () {
-              // Show filter dialog to enter price
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Filter by Price'),
+                    title: Text('Filter by Price',
+                        style: TextStyle(color: Colors.orange.shade700)),
                     content: TextField(
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(labelText: 'Enter Price'),
@@ -250,7 +370,6 @@ class _ExistingFoodScreenState extends State<ExistingFoodScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          // Apply filter
                           applyFilter(filterPrice ?? 0);
                           Navigator.of(context).pop();
                         },
@@ -263,9 +382,8 @@ class _ExistingFoodScreenState extends State<ExistingFoodScreen> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.clear),
+            icon: Icon(Icons.clear, color: Colors.orange.shade700),
             onPressed: () {
-              // Clear filter
               clearFilter();
             },
           ),
@@ -292,7 +410,6 @@ class _ExistingFoodScreenState extends State<ExistingFoodScreen> {
           }
           return true;
         }).toList();
-        // Sort food items by price in descending order
         foodItems.sort((a, b) {
           final priceA = a['price'] as double;
           final priceB = b['price'] as double;
@@ -305,42 +422,40 @@ class _ExistingFoodScreenState extends State<ExistingFoodScreen> {
             final foodName = foodItem['foodName'] as String;
             final description = foodItem['description'] as String;
             final imageUrl = foodItem['imageUrl'] as String;
-            final price =
-                foodItem['price'] as double; // Assuming 'price' is a double
+            final price = foodItem['price'] as double;
 
-            return ListTile(
-              contentPadding: EdgeInsets.all(0), // Remove default padding
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 180,
-                    width: double.infinity, // Take full width
+            return Card(
+              elevation: 3,
+              margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              child: ListTile(
+                contentPadding: EdgeInsets.all(8),
+                leading: SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
                     child: Image.network(
                       imageUrl,
-                      fit: BoxFit.cover, // Cover the entire area
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  SizedBox(height: 8), // Add some space between image and text
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "$foodName\n$description",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        '\$${price.toStringAsFixed(2)}', // Display price
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
+                title: Text(
+                  foodName,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 4),
+                    Text(description),
+                    SizedBox(height: 4),
+                    Text(
+                      '\$${price.toStringAsFixed(2)}',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
             );
           },

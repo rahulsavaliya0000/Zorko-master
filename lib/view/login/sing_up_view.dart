@@ -127,35 +127,40 @@ class _SignUpViewState extends State<SignUpView> {
                     const SizedBox(
                       height: 25,
                     ),
-                    RoundButton(title: "Sign Up",   onPressed: () async {
-                                  print(txtEmail.text);
-                                  print(txtPassword.text);
-                                  print(txtConfirmPassword.text);
-                          
-                                  if (txtEmail.text.isEmpty ||
-                                      txtPassword.text.isEmpty ||
-                                      txtConfirmPassword.text.isEmpty) {
-                                    showMessage(context, "All fields are required");
-                                  } else if (txtPassword.text !=
-                                      txtConfirmPassword.text) {
-                                    showMessage(context, "Passwords do not match");
-                                  } else {
-                                    // Continue with registration logic
-                                    await model.registerUser(
-                                        txtEmail.text.trim(),
-                                        txtPassword.text.trim());
-                          
-                                    if (model.state == ViewState.Success) {
-                                      Navigator.pushAndRemoveUntil(
-                                          context,
-                                          CupertinoPageRoute(
-                                              builder: (context) => RefCodePage()),
-                                          (route) => false);
-                                    } else {
-                                      showMessage(context, model.message);
-                                    }
-                                  }
-                                },),
+                 RoundButton(
+  title: "Sign Up",
+  onPressed: () async {
+    print(txtEmail.text);
+    print(txtPassword.text);
+    print(txtConfirmPassword.text);
+    print(txtMobile.text); // Capture mobile number input
+
+    if (txtEmail.text.isEmpty ||
+        txtPassword.text.isEmpty ||
+        txtConfirmPassword.text.isEmpty) {
+      showMessage(context, "All fields are required");
+    } else if (txtPassword.text !=
+        txtConfirmPassword.text) {
+      showMessage(context, "Passwords do not match");
+    } else {
+      // Continue with registration logic
+      await model.registerUser(
+          txtEmail.text.trim(),
+          txtPassword.text.trim(),
+          txtMobile.text); // Pass mobile number to registerUser method
+
+      if (model.state == ViewState.Success) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => RefCodePage()),
+            (route) => false);
+      } else {
+        showMessage(context, model.message);
+      }
+    }
+  },
+),
                     const SizedBox(
                       height: 30,
                     ),

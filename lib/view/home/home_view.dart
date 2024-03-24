@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hack/common/color_extension.dart';
 import 'package:hack/common_widget/round_textfield.dart';
 import 'package:hack/googlemap.dart';
+import 'package:intl/intl.dart';
 
 import '../../common/globs.dart';
 import '../../common/service_call.dart';
@@ -22,6 +23,13 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   TextEditingController txtSearch = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _showbox();
+    });
+  }
 
   List catArr = [
     {"image": "assets/img/cat_offer.png", "name": "Offers"},
@@ -216,41 +224,37 @@ class _HomeViewState extends State<HomeView> {
                                 Container(
                                   width: 200,
                                   height: 18,
-                                  child:RichText(
-  text: TextSpan(
-    style: TextStyle(
-      fontWeight: FontWeight.bold,
-      color: Colors.black,
-    ),
-    children: [
-    
-      TextSpan(
-        text: description,
-        style: TextStyle(
-          fontSize: 14,
-          color: Colors.grey.shade600,
-        ),
-      ),
-      // TextSpan(
-      //   text: '..', // Second occurrence of description
-      //   style: TextStyle(
-      //     fontSize: 14,
-      //     color: Colors.grey.shade600,
-      //   ),
-      // ),
-    ],
-  ),
-),
-
+                                  child: RichText(
+                                    text: TextSpan(
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          text: description,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                        // TextSpan(
+                                        //   text: '..', // Second occurrence of description
+                                        //   style: TextStyle(
+                                        //     fontSize: 14,
+                                        //     color: Colors.grey.shade600,
+                                        //   ),
+                                        // ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-
                               ],
                             ),
-                           
                           ],
                         ),
                         Text(
-                          '\$${price.toStringAsFixed(2)}', // Display price
+                          '${price.toStringAsFixed(2)}\\-', // Display price
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 24,
@@ -263,6 +267,42 @@ class _HomeViewState extends State<HomeView> {
               ),
             );
           },
+        );
+      },
+    );
+  }
+
+  void _showbox() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Filter by Price'),
+          content: TextField(
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(labelText: 'Enter Price'),
+            onChanged: (value) {
+              setState(() {
+                filterPrice = double.tryParse(value);
+              });
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Apply filter
+                applyFilter(filterPrice ?? 0);
+                Navigator.of(context).pop();
+              },
+              child: Text('Apply'),
+            ),
+          ],
         );
       },
     );
@@ -285,7 +325,7 @@ class _HomeViewState extends State<HomeView> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "Good evening ${ServiceCall.userPayload[KKey.name] ?? ""}!",
+                      "Good afternoon ${ServiceCall.userPayload[KKey.name] ?? ""}!",
                       style: TextStyle(
                           color: TColor.primaryText,
                           fontSize: 20,
@@ -376,7 +416,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
               const SizedBox(
-                height: 30,
+                height: 10,
               ),
               // SizedBox(
               //   height: 120,
@@ -419,40 +459,41 @@ class _HomeViewState extends State<HomeView> {
                           ),
                           onPressed: () {
                             // Show filter dialog to enter price
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('Filter by Price'),
-                                  content: TextField(
-                                    keyboardType: TextInputType.number,
-                                    decoration: InputDecoration(
-                                        labelText: 'Enter Price'),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        filterPrice = double.tryParse(value);
-                                      });
-                                    },
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Cancel'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        // Apply filter
-                                        applyFilter(filterPrice ?? 0);
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Apply'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                            _showbox();
+                            // showDialog(
+                            //   context: context,
+                            //   builder: (BuildContext context) {
+                            //     return AlertDialog(
+                            //       title: Text('Filter by Price'),
+                            //       content: TextField(
+                            //         keyboardType: TextInputType.number,
+                            //         decoration: InputDecoration(
+                            //             labelText: 'Enter Price'),
+                            //         onChanged: (value) {
+                            //           setState(() {
+                            //             filterPrice = double.tryParse(value);
+                            //           });
+                            //         },
+                            //       ),
+                            //       actions: <Widget>[
+                            //         TextButton(
+                            //           onPressed: () {
+                            //             Navigator.of(context).pop();
+                            //           },
+                            //           child: Text('Cancel'),
+                            //         ),
+                            //         TextButton(
+                            //           onPressed: () {
+                            //             // Apply filter
+                            //             applyFilter(filterPrice ?? 0);
+                            //             Navigator.of(context).pop();
+                            //           },
+                            //           child: Text('Apply'),
+                            //         ),
+                            //       ],
+                            //     );
+                            //   },
+                            // );
                           },
                         ),
                         IconButton(
@@ -521,8 +562,28 @@ class _HomeViewState extends State<HomeView> {
 class MySlider extends StatelessWidget {
   const MySlider({super.key});
 
+  void printBirthdayAndAge(Map<String, dynamic> userData) {
+    DateTime? birthday = userData['birthday'] != null
+        ? (userData['birthday'] as Timestamp).toDate()
+        : null;
+
+    // Print the birthday
+    if (birthday != null) {
+      String formattedBirthday = DateFormat('yyyy-MM-dd').format(birthday);
+      print('Users birthday: $formattedBirthday');
+    } else {
+      print('Users birthday is not available.');
+    }
+
+    // Calculate and print the age
+  }
+
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> userData = {'birthday': Timestamp.now()};
+    DateTime today = DateTime.now();
+    bool isBirthday = "2024-03-24" == userData;
+
     return CarouselSlider(
       options: CarouselOptions(
         height: 200,
@@ -735,100 +796,101 @@ class MySlider extends StatelessWidget {
             ),
           ],
         ),
-        Stack(
-          children: [
-            Container(
-              height: 200,
-              alignment: Alignment.bottomCenter,
-              width: 400,
-              color: Colors.white,
-              padding: const EdgeInsets.all(20),
-            ),
-            Positioned(
-              bottom: 0,
-              child: Container(
-                height: 120,
-                width: 315,
-                decoration: BoxDecoration(
-                  color: Colors.deepOrange,
-                  borderRadius: BorderRadius.circular(28),
+        // if (isBirthday)
+          Stack(
+            children: [
+              Container(
+                height: 200,
+                alignment: Alignment.bottomCenter,
+                width: 400,
+                color: Colors.white,
+                padding: const EdgeInsets.all(20),
+              ),
+              Positioned(
+                bottom: 0,
+                child: Container(
+                  height: 120,
+                  width: 315,
+                  decoration: BoxDecoration(
+                    color: Colors.deepOrange,
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  // Second Container's background color
                 ),
-                // Second Container's background color
               ),
-            ),
-            Positioned(
-              right: 0,
-              top: 0,
-              child: Image.asset(
-                'assets/img/happy.png', // Replace with your image asset path
-                // width: 70,
-                height: 120,
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Image.asset(
+                  'assets/img/happy.png', // Replace with your image asset path
+                  // width: 70,
+                  height: 120,
+                ),
               ),
-            ),
-            Positioned(
-              right: 5,
-              bottom: 10,
-              child: Image.asset(
-                'assets/img/zorko.png',
-                color: Colors.black, // Replace with your image asset path
-                // width: 70,
-                height: 15,
+              Positioned(
+                right: 5,
+                bottom: 10,
+                child: Image.asset(
+                  'assets/img/zorko.png',
+                  color: Colors.black, // Replace with your image asset path
+                  // width: 70,
+                  height: 15,
+                ),
               ),
-            ),
-            const Positioned(
-              bottom: 35,
-              left: 10,
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 2,
-                  ),
-                  Text(
-                    ' 50% OFF',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Montserrat',
-                      fontSize: 25,
-                      fontWeight: FontWeight.w600,
+              const Positioned(
+                bottom: 35,
+                left: 10,
+                child: Column(
+                  // mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 2,
                     ),
-                  ),
-                  // Text(
-                  //   ' OFF ',
-                  //   style: TextStyle(
-                  //     color: Colors.white,
-                  //     fontFamily: 'Montserrat',
-                  //     fontSize: 30,
-                  //     fontWeight: FontWeight.w600,
-                  //   ),
-                  // ),
-                  // Text(
-                  //   '  Ever',
-                  //   style: TextStyle(
-                  //     color: Colors.white,
-                  //     fontFamily: 'Montserrat',
-                  //     fontSize: 19,
-                  //     fontWeight: FontWeight.w600,
-                  //   ),
-                  // ),
-                  SizedBox(
-                    height: 2,
-                  ),
-                  Text(
-                    '  code :-ZORAKO123',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Montserrat',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
+                    Text(
+                      ' 50% OFF',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Montserrat',
+                        fontSize: 25,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  )
-                ],
+                    // Text(
+                    //   ' OFF ',
+                    //   style: TextStyle(
+                    //     color: Colors.white,
+                    //     fontFamily: 'Montserrat',
+                    //     fontSize: 30,
+                    //     fontWeight: FontWeight.w600,
+                    //   ),
+                    // ),
+                    // Text(
+                    //   '  Ever',
+                    //   style: TextStyle(
+                    //     color: Colors.white,
+                    //     fontFamily: 'Montserrat',
+                    //     fontSize: 19,
+                    //     fontWeight: FontWeight.w600,
+                    //   ),
+                    // ),
+                    SizedBox(
+                      height: 2,
+                    ),
+                    Text(
+                      '  code :-ZORAKO123',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Montserrat',
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
       ],
     );
   }

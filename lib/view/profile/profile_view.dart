@@ -300,7 +300,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:hack/view/app_color.dart';
 import 'package:hack/view/auth_provider.dart';
+import 'package:hack/view/invite_friend.dart';
 import 'package:hack/view/login/welcome_view.dart';
+import 'package:hack/view/more/noti.dart';
 import 'package:hack/view/utils.dart';
 import 'package:image_cropper/image_cropper.dart';
 
@@ -309,6 +311,7 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProfileView extends StatefulWidget {
   @override
@@ -324,6 +327,8 @@ class _ProfileViewState extends State<ProfileView> {
   String _imageUrl = '';
   bool _isLoading = false;
   String _errorMessage = '';
+  CollectionReference profileRef =
+      FirebaseFirestore.instance.collection("users");
 
   @override
   void initState() {
@@ -430,7 +435,7 @@ class _ProfileViewState extends State<ProfileView> {
     if (user != null) {
       try {
         DocumentSnapshot userDoc =
-        await _firestore.collection('users').doc(user.uid).get();
+            await _firestore.collection('users').doc(user.uid).get();
         if (!userDoc.exists) {
           await _firestore.collection('users').doc(user.uid).set({
             'photoUrl': '',
@@ -465,7 +470,7 @@ class _ProfileViewState extends State<ProfileView> {
             fontSize: 15),
         title: 'Logout',
         titleStyle: TextStyle(
-            color:AppColor.redColor,
+            color: AppColor.redColor,
             fontFamily: 'Quicksand',
             fontWeight: FontWeight.w700,
             fontSize: 19),
@@ -489,9 +494,8 @@ class _ProfileViewState extends State<ProfileView> {
               await FirebaseAuth.instance.signOut();
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const WelcomeView()),
-                    (route) => false,
+                MaterialPageRoute(builder: (context) => const WelcomeView()),
+                (route) => false,
               );
             },
             text: 'Logout',
@@ -515,7 +519,7 @@ class _ProfileViewState extends State<ProfileView> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const WelcomeView()),
-              (route) => false,
+          (route) => false,
         );
       }
     } catch (error) {
@@ -546,7 +550,7 @@ class _ProfileViewState extends State<ProfileView> {
 
           String uid = _auth.currentUser!.uid;
           Reference storageReference =
-          _storage.ref().child('user_photos/$uid.jpg');
+              _storage.ref().child('user_photos/$uid.jpg');
           UploadTask uploadTask = storageReference.putFile(_image!);
 
           await uploadTask.whenComplete(() async {
@@ -601,310 +605,302 @@ class _ProfileViewState extends State<ProfileView> {
       theme: ThemeData.light(),
       home: Scaffold(
           body: RefreshIndicator(
-            onRefresh: _refreshData,
-            child: SingleChildScrollView(
-              child: Center(
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back,
-                              color: AppColor.blueColor,
-                              size: 33,
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          // Center(
-                          //   child: AnimatedSwitcher(
-                          //     duration: const Duration(milliseconds: 200),
-                          //     transitionBuilder:
-                          //         (Widget child, Animation<double> animation) {
-                          //       return Stack(
-                          //         children: [
-                          //           AnimatedContainer(
-                          //             duration: const Duration(milliseconds: 100),
-                          //             color:
-                          //
-                          //
-                          //                 Colors.grey[300]!,
-                          //             child: const Center(),
-                          //           ),
-                          //           ScaleTransition(
-                          //             scale: animation,
-                          //             child: RotationTransition(
-                          //               turns: Tween<double>(begin: 0.0, end: 0.5)
-                          //                   .animate(animation),
-                          //               child: child,
-                          //             ),
-                          //           ),
-                          //         ],
-                          //       );
-                          //     },
-                          //     child: Builder(
-                          //       builder: (context) {
-                          //         final themeMode =
-                          //         MediaQuery.of(context).platformBrightness ==
-                          //             Brightness.dark
-                          //             ? ThemeMode.dark
-                          //             : ThemeMode.light;
-                          //
-                          //         return TextButton(
-                          //           style: ButtonStyle(
-                          //             backgroundColor: MaterialStateProperty.all(
-                          //                 Colors.transparent),
-                          //           ),
-                          //           onPressed: () {
-                          //             // context.read<ThemeProvider>().toggleTheme();
-                          //           },
-                          //           child: Icon(
-                          //
-                          //                 Icons.nightlight_round_outlined,
-                          //             color: Colors.black.withOpacity(0.9),
-                          //             key: ValueKey<ThemeMode>(themeMode),
-                          //           ),
-                          //         );
-                          //       },
-                          //     ),
-                          //   ),
-                          // ),
-                        ],
+        onRefresh: _refreshData,
+        child: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 50,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Color(0xfffc6011),
+                          size: 33,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
                       ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      // Center(
+                      //   child: AnimatedSwitcher(
+                      //     duration: const Duration(milliseconds: 200),
+                      //     transitionBuilder:
+                      //         (Widget child, Animation<double> animation) {
+                      //       return Stack(
+                      //         children: [
+                      //           AnimatedContainer(
+                      //             duration: const Duration(milliseconds: 100),
+                      //             color:
+                      //
+                      //
+                      //                 Colors.grey[300]!,
+                      //             child: const Center(),
+                      //           ),
+                      //           ScaleTransition(
+                      //             scale: animation,
+                      //             child: RotationTransition(
+                      //               turns: Tween<double>(begin: 0.0, end: 0.5)
+                      //                   .animate(animation),
+                      //               child: child,
+                      //             ),
+                      //           ),
+                      //         ],
+                      //       );
+                      //     },
+                      //     child: Builder(
+                      //       builder: (context) {
+                      //         final themeMode =
+                      //         MediaQuery.of(context).platformBrightness ==
+                      //             Brightness.dark
+                      //             ? ThemeMode.dark
+                      //             : ThemeMode.light;
+                      //
+                      //         return TextButton(
+                      //           style: ButtonStyle(
+                      //             backgroundColor: MaterialStateProperty.all(
+                      //                 Colors.transparent),
+                      //           ),
+                      //           onPressed: () {
+                      //             // context.read<ThemeProvider>().toggleTheme();
+                      //           },
+                      //           child: Icon(
+                      //
+                      //                 Icons.nightlight_round_outlined,
+                      //             color: Colors.black.withOpacity(0.9),
+                      //             key: ValueKey<ThemeMode>(themeMode),
+                      //           ),
+                      //         );
+                      //       },
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Stack(
                       children: [
-                        Stack(
-                          children: [
-                            SizedBox(
-                              width: 160,
-                              height: 160,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(80),
-                                  border: Border.all(
-                                    color: AppColor.blueColor,
-                                    width: 1.2,
-                                  ),
-                                ),
-                                child: _isLoading
-                                    ? const CircularProgressIndicator()
-                                    : _errorMessage.isNotEmpty
+                        SizedBox(
+                          width: 160,
+                          height: 160,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(80),
+                              border: Border.all(
+                                color: Colors.amber.shade900,
+                                width: 1.2,
+                              ),
+                            ),
+                            child: _isLoading
+                                ? const CircularProgressIndicator(color: Color(0xfffc6011),)
+                                : _errorMessage.isNotEmpty
                                     ? Center(
-                                  child: Text(
-                                    _errorMessage,
-                                    style: const TextStyle(
-                                        color: Colors.red),
-                                  ),
-                                )
+                                        child: Text(
+                                          _errorMessage,
+                                          style: const TextStyle(
+                                              color: Colors.red),
+                                        ),
+                                      )
                                     : CircleAvatar(
-                                  radius: 80,
-                                  backgroundImage: (_image != null)
-                                      ? FileImage(_image!)
-                                      : (_imageUrl.isNotEmpty)
-                                      ? NetworkImage(_imageUrl)
-                                      : const AssetImage(
-                                      'assets/img/edit_imageicon.png')
-                                  as ImageProvider,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              right: 3,
-                              bottom: 8,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.white,
-                                ),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.white,
-                                    border: Border.all(
-                                      color: AppColor.blueColor,
-                                      width: 1.0,
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(4.0),
-                                    child: InkWell(
-                                      onTap: _uploadImage,
-                                      child: Image.asset(
-                                        'assets/img/edit_imageicon.png',
-                                        width: 27,
-                                        height: 27,
-                                        color: AppColor.blueColor,
+                                        radius: 80,
+                                        backgroundImage: (_image != null)
+                                            ? FileImage(_image!)
+                                            : (_imageUrl.isNotEmpty)
+                                                ? NetworkImage(_imageUrl)
+                                                : const AssetImage(
+                                                        'assets/img/edit_imageicon.png')
+                                                    as ImageProvider,
                                       ),
-                                    ),
+                          ),
+                        ),
+                        Positioned(
+                          right: 3,
+                          bottom: 8,
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                            ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                border: Border.all(
+                                  color: Colors.amber.shade900,
+                                  width: 1.0,
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: InkWell(
+                                  onTap: _uploadImage,
+                                  child: Image.asset(
+                                    'assets/img/edit_imageicon.png',
+                                    width: 27,
+                                    height: 27,
+                                    color: Colors.amber.shade900,
                                   ),
                                 ),
                               ),
                             ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(width: 45),
-                        Text(
-                          _displayName,
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(width: 45),
+                    Text(
+                      _displayName,
+                      style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontFamily: 'Quicksand',
+                          fontWeight: FontWeight.w700,
+                          fontSize: 19),
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.edit,
+                        color: Color(0xfffc6011),
+                        size: 22,
+                      ),
+                      onPressed: _showEditDisplayNameDialog,
+                    ),
+                  ],
+                ),
+                Text(
+                  user?.email ?? 'user@email.com',
+                  style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                      fontFamily: 'Quicksand',
+                      fontWeight: FontWeight.w400),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: AppColor.whiteColor,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: Text(
+                          'Privacy',
                           style: TextStyle(
-                              color: Colors.grey.shade700,
+                              color: Colors.amber.shade900,
                               fontFamily: 'Quicksand',
                               fontWeight: FontWeight.w700,
                               fontSize: 19),
                         ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.edit,
-                            color: AppColor.blueColor,
-                            size: 22,
-                          ),
-                          onPressed: _showEditDisplayNameDialog,
+                        onTap: () {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //       builder: (context) => PrivacyScreen()),
+                          // );
+                        },
+                      ),
+                          const Divider(color: Color(0xffaf420b)),
+                      ListTile(
+                        title: Text(
+                          'Notifications',
+                          style: TextStyle(
+                              color: Colors.amber.shade900,
+                              fontFamily: 'Quicksand',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 19),
                         ),
-                      ],
-                    ),
-                    Text(
-                      user?.email ?? 'user@email.com',
-                      style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                          fontFamily: 'Quicksand',
-                          fontWeight: FontWeight.w400),
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: AppColor.whiteColor,
-                        borderRadius: BorderRadius.circular(15),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => NotificationsPage()),
+                          );
+                        },
                       ),
-                      child: Column(
-                        children: [
-                          ListTile(
-                            title: Text(
-                              'Privacy',
-                              style: TextStyle(
-                                  color: AppColor.blueColor,
-                                  fontFamily: 'Quicksand',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 19),
-                            ),
-                            onTap: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //       builder: (context) => PrivacyScreen()),
-                              // );
+                         const Divider(color: Color(0xffaf420b)),
+                      ListTile(
+                        title: Text(
+                          'Invite a Friend',
+                          style: TextStyle(
+                              color: Colors.amber.shade900,
+                              fontFamily: 'Quicksand',
+                              fontWeight: FontWeight.w700,
+                              fontSize: 19),
+                        ),
+                        onTap: () async {
+                          // Show a loading indicator while fetching data
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Center(child: CircularProgressIndicator());
                             },
-                          ),
-                          const Divider(color: Colors.black),
-                          ListTile(
-                            title: Text(
-                              'Calorie Calculator',
-                              style: TextStyle(
-                                  color: AppColor.blueColor,
-                                  fontFamily: 'Quicksand',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 19),
-                            ),
-                            onTap: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     // builder: (context) => StepDashboard()),
-                              //       builder: (context) =>
-                              //           CalorieCalculatorScreen()),
-                              // );
-                            },
-                          ),
-                          const Divider(color: Colors.black),
-                          ListTile(
-                            title: Text(
-                              'FAQ',
-                              style: TextStyle(
-                                  color: AppColor.blueColor,
-                                  fontFamily: 'Quicksand',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 19),
-                            ),
-                            onTap: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //       builder: (context) => FAQScreen()),
-                              // );
-                            },
-                          ),
-                          const Divider(color: Colors.black),
-                          ListTile(
-                            title: Text(
-                              'Notifications',
-                              style: TextStyle(
-                                  color: AppColor.blueColor,
-                                  fontFamily: 'Quicksand',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 19),
-                            ),
-                            onTap: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //       builder: (context) => NotificationsPage()),
-                              // );
-                            },
-                          ),
-                          const Divider(color: Colors.black),
-                          ListTile(
-                            title: Text(
-                              'Invite a Friend',
-                              style: TextStyle(
-                                  color: AppColor.blueColor,
-                                  fontFamily: 'Quicksand',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 19),
-                            ),
-                            onTap: () {
-                              // Navigator.push(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //       builder: (context) => InviteFriendScreen(),
-                              //     ));
-                            },
-                          ),
-                          const Divider(color: Colors.black),
-                          ListTile(
-                              title: Text(
-                                'Logout',
-                                style: TextStyle(
-                                    color:AppColor.blueColor,
-                                    fontFamily: 'Quicksand',
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 19),
-                              ),
-                              onTap: () {
-                                _signOut(context);
-                              }),
-                        ],
+                          );
+
+                          try {
+                            // Fetch the referral code from Firebase
+                            QuerySnapshot querySnapshot = await profileRef
+                                .where("refCode",
+                                    isEqualTo: auth.currentUser!.uid)
+                                .get();
+                            if (querySnapshot.docs.isNotEmpty) {
+                              // Get the referral code from the first document
+                              String refCode =
+                                  querySnapshot.docs.first['refCode'];
+
+                              // Share the referral code
+                              String shareMessage =
+                                  'Hey! Use this app and enter my referral code: ($refCode)';
+                              Share.share(shareMessage);
+                            } else {
+                              // Handle case where referral code is not found
+                              Utils.toastMessage('Referral code not found.');
+                            }
+                          } catch (e) {
+                            // Handle error while fetching data
+                            Utils.toastMessage(
+                                'Error fetching referral code: $e');
+                          } finally {
+                            // Dismiss the loading indicator
+                            Navigator.of(context).pop();
+                          }
+                        },
                       ),
-                    ),
-                  ],
+                      const Divider(color: Color(0xffaf420b)),
+                      ListTile(
+                          title: Text(
+                            'Logout',
+                            style: TextStyle(
+                                color: Colors.amber.shade900,
+                                fontFamily: 'Quicksand',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 19),
+                          ),
+                          onTap: () {
+                            _signOut(context);
+                          }),         const Divider(color: Color(0xffaf420b)),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          )),
+          ),
+        ),
+      )),
     );
   }
 }

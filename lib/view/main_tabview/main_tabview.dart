@@ -75,12 +75,12 @@ class _MainTabViewState extends State<MainTabView> {
                   },
                   isSelected: selctTab == 0),
               TabButton(
-                  title: "Offer",
+                  title: "Share",
                   icon: "assets/img/tab_offer.png",
                   onTap: () {
                     if (selctTab != 1) {
                       selctTab = 1;
-                      selectPageView = const OfferView();
+                      selectPageView = AllReviewsScreen();
                     }
                     if (mounted) {
                       setState(() {});

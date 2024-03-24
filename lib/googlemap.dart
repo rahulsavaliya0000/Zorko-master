@@ -38,7 +38,7 @@ class _MapScreenState extends State<MapScreen> {
     LatLng(21.1862198, 72.8103599), // Zorko - Athwagate
     LatLng(21.1873286, 72.7787588), // Zorko, Brand of Food Lovers
     LatLng(21.16195, 72.8206729), // ZORKO Private limited
-    LatLng(21.1672615, 72.8116913), // Zorko brand of food lovers
+    LatLng(21.1672615, 72.8116913), 
     LatLng(21.1435839, 72.7854542), // Zorko Brand Of Food Lovers
   ];
 

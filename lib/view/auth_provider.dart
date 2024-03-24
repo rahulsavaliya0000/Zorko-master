@@ -14,6 +14,7 @@ class Auth_Provider extends ChangeNotifier {
 
   
   DateTime? _birthday;
+  
 
   // Getter methods for height, weight, and birthday
 
@@ -51,71 +52,66 @@ loginUser(String? email, String? password) async {
         notifyListeners();
     }
 }
+registerUser(String? email, String? password, String mobileNumber) async {
+  state = ViewState.Busy;
+  notifyListeners();
 
-  registerUser(String? email, String? password) async {
-    state = ViewState.Busy;
+  try {
+    await auth.createUserWithEmailAndPassword(
+        email: email!, password: password!);
+
+    ///Create user profile
+    createUserProfile(mobileNumber); // Pass mobileNumber to createUserProfile
+    message = "Register success";
+    state = ViewState.Success;
     notifyListeners();
-
-    try {
-      await auth.createUserWithEmailAndPassword(
-          email: email!, password: password!);
-
-      ///Create user profile
-      createUserProfile();
-      message = "Register success";
-      state = ViewState.Success;
-      notifyListeners();
-    } on FirebaseException catch (e) {
-      message = e.message.toString();
-      state = ViewState.Error;
-      notifyListeners();
-    } catch (e) {
-      message = e.toString();
-      state = ViewState.Error;
-      notifyListeners();
-    }
+  } on FirebaseException catch (e) {
+    message = e.message.toString();
+    state = ViewState.Error;
+    notifyListeners();
+  } catch (e) {
+    message = e.toString();
+    state = ViewState.Error;
+    notifyListeners();
   }
-
-
-
+}
 
   static const String _defaultPhotoUrl = 'https://t3.ftcdn.net/jpg/00/98/28/04/360_F_98280405_zpv1mUjUzx7AKn63v97TYR7ITNojzStp.jpg';
 
 
+void createUserProfile(String mobileNumber) async {
+  try {
+    String uid = FirebaseAuth.instance.currentUser!.uid;
 
-  void createUserProfile() async {
-    try {
-      String uid = FirebaseAuth.instance.currentUser!.uid;
+    final body = {
+      "refCode": uid,
+      "email": FirebaseAuth.instance.currentUser!.email,
+      "mobileNumber": mobileNumber,
+      "date_created": DateTime.now(),
+      "referals": <String>[],
+      "refEarnings": 0,
+      "birthday": _birthday ?? DateTime.now(),
+      "photoUrl": _defaultPhotoUrl,
+      "age": 0,
+    };
 
-      final body = {
-        "refCode": uid,
-        "email": FirebaseAuth.instance.currentUser!.email,
-        "date_created": DateTime.now(),
-        "referals": <String>[],
-        "refEarnings": 0,
-        "birthday": _birthday ?? DateTime.now(),
-        "photoUrl": _defaultPhotoUrl,
-        "age": 0,
+    // Check if the document already exists
+    var userProfile = await profileRef.doc(uid).get();
 
-      };
-
-      // Check if the document already exists
-      var userProfile = await profileRef.doc(uid).get();
-
-      if (userProfile.exists) {
-        // If the document exists, update it
-        await profileRef.doc(uid).update(body);
-        print('User profile updated successfully!');
-      } else {
-        // If the document doesn't exist, create a new one
-        await profileRef.doc(uid).set(body);
-        print('User profile created successfully!');
-      }
-    } catch (error) {
-      print('Error creating/updating user profile: $error');
-      // Handle error as needed
+    if (userProfile.exists) {
+      // If the document exists, update it
+      await profileRef.doc(uid).update(body);
+      print('User profile updated successfully!');
+    } else {
+      // If the document doesn't exist, create a new one
+      await profileRef.doc(uid).set(body);
+      print('User profile created successfully!');
     }
+  } catch (error) {
+    print('Error creating/updating user profile: $error');
+    // Handle error as needed
   }
+}
 
   Future<void> updateUserProfileImageUrl(String imageUrl) async {
     try {

@@ -10,6 +10,7 @@ import 'package:hack/view/home/home_view.dart';
 import 'package:hack/view/login/log_in_with_number.dart';
 import 'package:hack/view/login/rest_password_view.dart';
 import 'package:hack/view/login/sing_up_view.dart';
+import 'package:hack/view/main_tabview/main_tabview.dart';
 import 'package:hack/view/on_boarding/on_boarding_view.dart';
 import 'package:hack/view/utils.dart';
 import 'package:provider/provider.dart';
@@ -135,7 +136,7 @@ class _LoginViewState extends State<LoginView> {
                                                   context,
                                                   CupertinoPageRoute(
                                                       builder: (context) =>
-                                                           HomeView()),
+                                                           MainTabView()),
                                                   (route) => false);
                                             } else {
                                               showMessage(context, model.message);

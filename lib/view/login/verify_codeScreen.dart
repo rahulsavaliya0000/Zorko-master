@@ -32,6 +32,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
 
       Map<String, Object?> body = {
         "refCode": uid,
+        
         "email": FirebaseAuth.instance.currentUser!.email,
         "date_created": DateTime.now(),
         "referals": <String>[],
@@ -62,18 +63,14 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
             style: TextStyle(
               fontFamily: 'Quicksand',
               fontWeight: FontWeight.w600,
-              shadows: [
-                Shadow(
-                  offset: Offset(3.0, 3.0),
-                  blurRadius: 5.0,
-                  color: Colors.grey.shade400,
-                ),
-              ],
+              color: Colors.orange.shade700,
+
+
             ),
           ),
         ),
       ),
-      backgroundColor: AppColor.blueColor,
+      backgroundColor:Colors.orange.shade700,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -88,38 +85,40 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
               length: 6,
               controller: _pinPutController,
               focusNode: _pinPutFocusNode,
-              onSubmitted: (pin) async {
-                if (pin.isEmpty) {
-                  Utils.toastMessage('Please enter the verification code.');
-                  return;
-                }
+           onSubmitted: (pin) async {
+  if (pin.isEmpty) {
+    Utils.toastMessage('Please enter the verification code.');
+    return;
+  }
 
-                setState(() {
-                  loading = true;
-                });
+  setState(() {
+    loading = true;
+  });
 
-                try {
-                  final credential = PhoneAuthProvider.credential(
-                    verificationId: widget.verificationId,
-                    smsCode: pin,
-                  );
+  try {
+    final credential = PhoneAuthProvider.credential(
+      verificationId: widget.verificationId,
+      smsCode: pin,
+    );
 
-                  await auth.signInWithCredential(credential);
-                  // Call the function to create user profile after successful sign-in
-                  createUserProfile();
-                  await Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => MainTabView()),
-                    (Route<dynamic> route) => false,
-                  );
-                } catch (e) {
-                  setState(() {
-                    loading = false;
-                  });
+    await auth.signInWithCredential(credential);
 
-                  Utils.toastMessage(e.toString());
-                }
-              },
+    // Call the function to create user profile after successful sign-in
+    createUserProfile();
+
+    await Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => MainTabView()),
+      (Route<dynamic> route) => false,
+    );
+  } catch (e) {
+    setState(() {
+      loading = false;
+    });
+
+    Utils.toastMessage(e.toString());
+  }
+},
             ),
             const SizedBox(
               height: 80,
@@ -127,7 +126,7 @@ class _VerifyCodeScreenState extends State<VerifyCodeScreen> {
             CustomizeButton(
               color: AppColor.whiteColor,
               text: loading ? 'Verifying...' : 'Log In',
-              textcolor: AppColor.blueColor,
+              textcolor: Colors.orange.shade700,
               height: 48,
               width: 270,
               fontfamily: 'Quicksand',

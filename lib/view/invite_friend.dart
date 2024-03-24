@@ -45,7 +45,7 @@ class _InviteFriendScreenState extends State<InviteFriendScreen> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(children: [
                   Image.asset(
-                    'assets/coin.png',
+                    'assets/img/coin.png',
                     height: 39.0,
                   ),
                   FutureBuilder<QuerySnapshot>(
@@ -170,7 +170,7 @@ class _InviteFriendScreenState extends State<InviteFriendScreen> {
                                   letterSpacing: 1.2,
                                 ),
                                 primary: Colors.transparent,
-                                onPrimary: Colors.transparent,
+                               onPrimary: Colors.transparent,
                               ),
                             ),
                           ),
@@ -209,12 +209,12 @@ class _InviteFriendScreenState extends State<InviteFriendScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Image.asset('assets/findfd.png',
+                            Image.asset('assets/img/findfd.png',
                                 height: 70, color: AppColor.redColor),
                             Padding(
                               padding: const EdgeInsets.only(right: 20),
                               child: Image.asset(
-                                'assets/share.png',
+                                'assets/img/share.png',
                                 height: 70,
                               ),
                             ),

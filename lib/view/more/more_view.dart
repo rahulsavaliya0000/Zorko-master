@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hack/review.dart';
 import 'package:hack/view/RefCodePage.dart';
 import 'package:hack/view/app_color.dart';
+import 'package:hack/view/invite_friend.dart';
 import 'package:hack/view/login/sing_up_view.dart';
 import 'package:hack/view/login/welcome_view.dart';
 import 'package:hack/view/more/about_us_view.dart';
@@ -50,7 +51,7 @@ class _MoreViewState extends State<MoreView> {
     },
     {
       "index": "4",
-      "name": "About Us",
+      "name": "Add review",
       "image": "assets/img/more_info.png",
       "base": 0
     },
@@ -68,6 +69,11 @@ class _MoreViewState extends State<MoreView> {
     },
     {
       "index": "7",
+      "name": "AboutUs",
+      "image": "assets/img/more_info.png",
+      "base": 0
+    },{
+      "index": "8",
       "name": "Logout",
       "image": "assets/img/more_info.png",
       "base": 0
@@ -228,13 +234,17 @@ class _MoreViewState extends State<MoreView> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => RefCodePage()));
+                                    builder: (context) => InviteFriendScreen()));
                           case "6":
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => DashboardScreen()));
-                          case "7":
+                                    builder: (context) => DashboardScreen()));case "7":
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AboutUsView()));
+                          case "8":
                             _signOut(context);
                             break;
                         }
